@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { getCoinInfo } from "../../constant/CoinData";
 import Chart from "chart.js/auto";
 import { Line } from "react-chartjs-2";
-import { CategoryScale } from "chart.js";
+import { CategoryScale, ChartOptions } from "chart.js";
 import AccountInfo from "../../components/Trade/AccountInfo";
 import CoinInfo from "../../components/Trade/CoinInfo";
 import useAccount from "../../stocker-core/sdk/Account/useAccount";
@@ -33,18 +33,54 @@ const INTERVALS: IntervalConfig[] = [
 	{ value: "3d", label: "1y" },
 ];
 
-const CHART_OPTIONS = {
+const CHART_OPTIONS: ChartOptions<'line'> = {
+	responsive: true,
+	maintainAspectRatio: false,
 	elements: {
-		point: { radius: 1.5 },
+		point: {
+			radius: 3,
+			pointStyle: 'rect',
+		},
+		line: {
+			tension: 0.2,
+		}
 	},
 	plugins: {
 		legend: { display: false },
+		tooltip: {
+			enabled: true,
+			mode: 'index',
+			intersect: false,
+		}
 	},
 	scales: {
-		x: { grid: { display: false, drawTicks: false }, display: false },
-		y: { grid: { display: false }, display: false },
+		x: {
+			display: true,
+			grid: {
+				display: true,
+			},
+			ticks: {
+				maxRotation: 45,
+				maxTicksLimit: 8,
+			},
+		},
+		y: {
+			display: true,
+			position: 'right',
+			grid: {
+				display: true,
+			},
+			ticks: {
+				callback: function(value) {
+					if (typeof value === 'number') {
+						return '$' + value.toFixed(2);
+					}
+					return '';
+				}
+			},
+		},
 	},
-} as const;
+};
 
 const TradeSymbol: FC = () => {
 	const router = useRouter();
@@ -116,6 +152,15 @@ const TradeSymbol: FC = () => {
 		labels: parseTimeList(priceListData.data).concat("now"),
 		datasets: [{
 			data: parsePriceList(priceListData.data).concat(price),
+			fill: false,
+			borderColor: '#2196F3',
+			backgroundColor: '#2196F3',
+			pointBackgroundColor: '#1976D2',
+			pointBorderColor: '#1976D2',
+			pointHoverBackgroundColor: '#1976D2',
+			pointHoverBorderColor: '#1976D2',
+			pointHoverRadius: 5,
+			borderWidth: 2,
 		}],
 	};
 
