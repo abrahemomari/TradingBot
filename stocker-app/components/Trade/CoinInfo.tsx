@@ -6,8 +6,8 @@ import { getCoinInfo } from "../../constant/CoinData";
 
 type CoinInfoProps = {
   children?: ReactNode;
-  symbol: any;
-  wallet: Wallet;
+  symbol: string;
+  wallet?: Wallet | null;
   currentPrice: number;
 };
 
