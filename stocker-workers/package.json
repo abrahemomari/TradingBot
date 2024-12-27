@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "NODE_ENV=DEV npx nodemon --watch index.ts --watch src -e ts --exec \"npx ts-node index.ts\"",
+    "dev": "NODE_ENV=DEV npx ts-node index.ts",
     "once": "NODE_ENV=DEV npx ts-node index.ts",
     "start": "NODE_ENV=PROD npx ts-node index.ts",
     "test": "jest --coverage"

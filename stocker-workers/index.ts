@@ -21,7 +21,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const PORT = process.env.HTTP_PORT;
+const PORT = 8080;
 
 app.get("/quote/crypto/:symbol", async (req, res) => {
   const symbol = req.params.symbol;
