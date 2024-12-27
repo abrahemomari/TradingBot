@@ -1,21 +1,20 @@
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
-import React, { FC, ReactNode, useEffect, useRef, useState } from "react";
 import Editor, { Monaco } from "@monaco-editor/react";
+import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { coinList } from "../../constant/CoinData";
-import axios from "axios";
 import TextField from "@mui/material/TextField";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { lib, TradeResult } from "../../components/Auto/type";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { useEffect, useRef, useState } from "react";
 import { useMutation } from "react-query";
-import { ScriptResult } from "../../components/Auto/ScriptResult";
 import { submitCode } from "../../api/binanceAPI";
+import { ScriptResult } from "../../components/Auto/ScriptResult";
+import { lib } from "../../components/Auto/type";
 import { algorithmList } from "../../constant/algorithm";
+import { coinList } from "../../constant/CoinData";
 import { convertIntervalToMili, INTERVAL } from "../../utils";
 
 const Auto = () => {

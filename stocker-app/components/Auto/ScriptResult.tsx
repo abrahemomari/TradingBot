@@ -1,11 +1,30 @@
 import { Box, CircularProgress, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { TradeResult } from "./type";
-import { convertTime } from "../../utils";
-import { LoadingIndicator } from "../Common/LoadingIndicator";
 import { ErrorResult } from "./ErrorResult";
 import { LogResult } from "./LogResult";
 import { TransactionResult } from "./TransactionResult";
+import { TradeResult } from "./type";
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 type ScriptResultType = {
   scriptData: undefined | TradeResult;
@@ -14,6 +33,52 @@ type ScriptResultType = {
 
 export const ScriptResult = ({ scriptData, loading }: ScriptResultType) => {
   const [resultSelect, setResultSelect] = useState("transaction");
+
+  const getBalanceData = () => {
+    if (!scriptData?.transactions) return null;
+    
+    let balance = scriptData.account.wallet;
+    const dataPoints = scriptData.transactions.map((transaction, index) => ({
+      x: index,
+      y: balance - transaction.price
+    })).reverse();
+    
+    // Add final balance
+    dataPoints.push({
+      x: dataPoints.length,
+      y: balance
+    });
+    
+    return {
+      labels: dataPoints.map(point => `Trade ${point.x}`),
+      datasets: [
+        {
+          label: 'Account Balance',
+          data: dataPoints.map(point => point.y),
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }
+      ]
+    };
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: 'Account Balance History'
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: false
+      }
+    }
+  };
 
   const renderResult = (resultTitle: string) => {
     switch (resultTitle) {
@@ -38,8 +103,8 @@ export const ScriptResult = ({ scriptData, loading }: ScriptResultType) => {
         paddingY: 1,
         display: "flex",
         flexDirection: "column",
-        minHeight: 200,
-        maxHeight: 300,
+        minHeight: 400,
+        maxHeight: 500,
         overflowY: "scroll",
       }}
     >
@@ -153,16 +218,24 @@ export const ScriptResult = ({ scriptData, loading }: ScriptResultType) => {
 
       {scriptData ? (
         <>
-          <Box sx={{ display: "flex", flexDirection: "row", marginY: 1 }}>
-            <Typography sx={{ marginRight: 2 }}>
-              Wallet Result: ${scriptData.account.wallet.toFixed(2)}
-            </Typography>
-            <Typography sx={{ marginRight: 2 }}>
-              Remaining Coin: {scriptData.account.coin}
-            </Typography>
-            <Typography>
-              Total Value: {scriptData.account.total.toFixed(2)}
-            </Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", marginY: 1 }}>
+            <Box sx={{ display: "flex", flexDirection: "row", marginY: 1 }}>
+              <Typography sx={{ marginRight: 2 }}>
+                Wallet Result: ${scriptData.account.wallet.toFixed(2)}
+              </Typography>
+              <Typography sx={{ marginRight: 2 }}>
+                Remaining Coin: {scriptData.account.coin}
+              </Typography>
+              <Typography>
+                Total Value: {scriptData.account.total.toFixed(2)}
+              </Typography>
+            </Box>
+            
+            <Box sx={{ height: 200, marginY: 2 }}>
+              {getBalanceData() && (
+                <Line options={chartOptions} data={getBalanceData()!} />
+              )}
+            </Box>
           </Box>
           {renderResult(resultSelect)}
         </>
